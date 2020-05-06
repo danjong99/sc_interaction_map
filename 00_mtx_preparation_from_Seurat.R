@@ -8,8 +8,8 @@ library(dplyr)
 library(clipr)
 
 ## Data loading
-cca_pp_mhcii <- readRDS("~/Desktop/Data/All/scRNAseq-PP/cca_pp_mhcii.rds")
-fae.integrated <- readRDS("~/Desktop/Data/All/scRNAseq_epithelialCells/fae.integrated.rds")
+cca_pp_mhcii <- readRDS("/Volumes/Extreme SSD/scRNAseq_analysisfile/10XResults/scRNAseq_PP/scRNA-PP/cca_pp_mhcii.rds")
+epiMerged <- readRDS("/Volumes/Extreme SSD/scRNAseq_analysisfile/10XResults/SIgA_production/scRNAseq_epithelialCells/epiMerged.integrated.rds")
 
 
 DimPlot(cca_pp_mhcii, label = T, reduction = 'tsne')
@@ -18,14 +18,10 @@ top10 <- pp.cm.markers %>% group_by(cluster) %>% top_n(10, avg_logFC)
 FeaturePlot(object = cca_pp_mhcii, features = c("Rora"),
             reduction = 'tsne')
 
-DimPlot(fae.integrated, label = T, reduction = 'tsne')
-fae.cm.markers <- FindAllMarkers(object = fae.integrated, only.pos = T)
-top10 <- fae.cm.markers %>% group_by(cluster) %>% top_n(10, avg_logFC)
-FeaturePlot(object = fae.integrated, features = c("Cdc20"),
-            reduction = 'tsne', min.cutoff = 'q05', max.cutoff = 'q95')
+DimPlot(epiMerged, label = T, reduction = 'umap')
 
 ## LR_Pair_database loading
-lr_pair <- read.csv("./ligand_receptor_mtx/LR_Pair_human.txt", sep=" ", header=T, stringsAsFactors=F)
+lr_pair <- read.csv("../LR_Pair_txt.txt", sep=" ", header=T, stringsAsFactors=F)
 colnames(lr_pair)[1:3] <- c("Ligand", "Receptor", "known")
 
 ## Conversion Function
@@ -59,8 +55,6 @@ rm(temp)
 lr_pair = lr_pair[lr_pair$Ligand %in% hmligands_table$HGNC.symbol,]
 lr_pair = lr_pair[lr_pair$Receptor %in% hmreceptors_table$HGNC.symbol,]
 
-apply(hmligands_table,1,FUN = function(x){ lr_pair[which(x[1] == lr_pair$Ligand),]$Ligand = x[2] })
-
 Lds <- apply(lr_pair,1,FUN = function(x){
   temp = hmligands_table[x[1] == hmligands_table$HGNC.symbol,][2]
   temp <- temp %>% unlist() %>% unname()
@@ -77,19 +71,24 @@ lr_pair$Ligand <- Lds
 lr_pair$Receptor <- Receps
 rownames(lr_pair) <- paste0(lr_pair$Ligand,'_',lr_pair$Receptor)
 
+dim(lr_pair)
 
 #####################################################################################
 ## Interaction Matrix Preparation from Epithelial cells
 
-dome_epi_mtx <- GetAssayData(fae.integrated, assay = "RNA")
+fae.cell.ids <- Cells(epiMerged)[grep("F_",Cells(epiMerged))]
+fae_epithelium <- subset(x = epiMerged, cells = fae.cell.ids)
+DimPlot(fae_epithelium, label = T)
+
+dome_epi_mtx <- GetAssayData(fae_epithelium, assay = "RNA")
 temp <- t(as.matrix(dome_epi_mtx))
-temp <- cbind(data.frame(ident = Idents(fae.integrated), stringsAsFactors = F), temp)
+temp <- cbind(data.frame(ident = Idents(fae_epithelium), stringsAsFactors = F), temp)
 dome_epi_mtx <- t(temp)
 
-col_name <- gsub("B1_","",colnames(dome_epi_mtx))
-col_name <- gsub("B2_","",col_name)
-col_name <- gsub("B3_.","",col_name)
-col_name <- gsub("_GFI1B.","",col_name)
+col_name <- gsub("_GFI1B.","",colnames(dome_epi_mtx))
+col_name <- gsub("F_B1_","",col_name)
+col_name <- gsub("F_B2_","",col_name)
+col_name <- gsub("F_B3_.","",col_name)
 colnames(dome_epi_mtx) <- col_name
 dome_epi_mtx <- dome_epi_mtx[,!duplicated(colnames(dome_epi_mtx))]
 dome_epi_mtx <- t(dome_epi_mtx)
