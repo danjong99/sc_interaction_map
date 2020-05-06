@@ -1,0 +1,229 @@
+
+```{r}
+rm(list=ls())
+library(dplyr)
+
+#Calling LR pair
+LR_Pair <- read.csv("LR_Pair.txt", sep=" ", header=T, stringsAsFactors=F)
+colnames(LR_Pair)[1:3] <- c("Ligand", "Receptor", "known")
+```
+
+```{r}
+Stroma_L_table <- read.csv(file="D_Stromal_Ligands.xls", sep="\t", header=T, stringsAsFactors=F)
+Stroma_L_table <- Stroma_L_table[Stroma_L_table$ident!=9 & Stroma_L_table$ident!=11,]
+Stroma_L_table$ident <- gsub('^1$', '0', Stroma_L_table$ident)
+Stroma_L_table$ident <- gsub('^3$', '0', Stroma_L_table$ident)
+Stroma_L_table$ident <- gsub('^4$', '0', Stroma_L_table$ident)
+Stroma_L_table$ident <- gsub('^5$', '0', Stroma_L_table$ident)
+Stroma_L_table$ident <- gsub('^6$', '0', Stroma_L_table$ident)
+Stroma_L_table$ident <- gsub('^7$', '0', Stroma_L_table$ident)
+Stroma_L_table$ident <- as.numeric(Stroma_L_table$ident)
+Stroma_L_Mean_table <- Stroma_L_table %>% group_by(ident) %>% summarise_all(funs(mean))
+Stroma_L_table2 <- Stroma_L_table[,2:ncol(Stroma_L_table)]
+Stroma_L_table2[Stroma_L_table2 > 0] <- 1
+Stroma_L_table2 <- cbind(Stroma_L_table[,1], Stroma_L_table2)
+colnames(Stroma_L_table2)[1] <- 'ident'
+Stroma_L_PA_table <- Stroma_L_table2 %>% group_by(ident) %>% summarise_all(funs(mean))
+
+Stroma_R_table <- read.csv(file="D_Stromal_Receptors.xls", sep="\t", header=T, stringsAsFactors=F)
+Stroma_R_table <- Stroma_R_table[Stroma_R_table$ident!=9 & Stroma_R_table$ident!=11,]
+Stroma_R_table$ident <- gsub('^1$', '0', Stroma_R_table$ident)
+Stroma_R_table$ident <- gsub('^3$', '0', Stroma_R_table$ident)
+Stroma_R_table$ident <- gsub('^4$', '0', Stroma_R_table$ident)
+Stroma_R_table$ident <- gsub('^5$', '0', Stroma_R_table$ident)
+Stroma_R_table$ident <- gsub('^6$', '0', Stroma_R_table$ident)
+Stroma_R_table$ident <- gsub('^7$', '0', Stroma_R_table$ident)
+Stroma_R_table$ident <- as.numeric(Stroma_R_table$ident)
+Stroma_R_Mean_table <- Stroma_R_table %>% group_by(ident) %>% summarise_all(funs(mean))
+Stroma_R_table2 <- Stroma_R_table[,2:ncol(Stroma_R_table)]
+Stroma_R_table2[Stroma_R_table2 > 0] <- 1
+Stroma_R_table2 <- cbind(Stroma_R_table[,1], Stroma_R_table2)
+colnames(Stroma_R_table2)[1] <- 'ident'
+Stroma_R_PA_table <- Stroma_R_table2 %>% group_by(ident) %>% summarise_all(funs(mean))
+
+Leuko_L_table <- read.csv(file="D_Leukocytes_Ligands.xls", sep="\t", header=T, stringsAsFactors=F)
+Leuko_L_table <- Leuko_L_table[Leuko_L_table$ident!=15 & Leuko_L_table$ident!=16 & Leuko_L_table$ident!=17 & Leuko_L_table$ident!=18,]
+Leuko_L_table$ident <- gsub('^11$', '0', Leuko_L_table$ident)
+Leuko_L_table$ident <- gsub('^9$', '0', Leuko_L_table$ident)
+Leuko_L_table$ident <- gsub('^14$', '0', Leuko_L_table$ident)
+Leuko_L_table$ident <- gsub('^4$', '1', Leuko_L_table$ident)
+Leuko_L_table$ident <- gsub('^7$', '5', Leuko_L_table$ident)
+Leuko_L_table$ident <- gsub('^3$', '2', Leuko_L_table$ident)
+Leuko_L_table$ident <- gsub('^6$', '2', Leuko_L_table$ident)
+Leuko_L_table$ident <- gsub('^8$', '2', Leuko_L_table$ident)
+Leuko_L_table$ident <- gsub('^10$', '2', Leuko_L_table$ident)
+Leuko_L_table$ident <- gsub('^12$', '2', Leuko_L_table$ident)
+Leuko_L_table$ident <- gsub('^13$', '2', Leuko_L_table$ident)
+Leuko_L_table$ident <- as.numeric(Leuko_L_table$ident)
+Leuko_L_Mean_table <- Leuko_L_table %>% group_by(ident) %>% summarise_all(funs(mean))
+Leuko_L_table2 <- Leuko_L_table[,2:ncol(Leuko_L_table)]
+Leuko_L_table2[Leuko_L_table2 > 0] <- 1
+Leuko_L_table2 <- cbind(Leuko_L_table[,1], Leuko_L_table2)
+colnames(Leuko_L_table2)[1] <- 'ident'
+Leuko_L_PA_table <- Leuko_L_table2 %>% group_by(ident) %>% summarise_all(funs(mean))
+
+Leuko_R_table <- read.csv(file="D_Leukocytes_Receptors.xls", sep="\t", header=T, stringsAsFactors=F)
+Leuko_R_table <- Leuko_R_table[Leuko_R_table$ident!=15 & Leuko_R_table$ident!=16 & Leuko_R_table$ident!=17 & Leuko_R_table$ident!=18,]
+Leuko_R_table$ident <- gsub('^11$', '0', Leuko_R_table$ident)
+Leuko_R_table$ident <- gsub('^9$', '0', Leuko_R_table$ident)
+Leuko_R_table$ident <- gsub('^14$', '0', Leuko_R_table$ident)
+Leuko_R_table$ident <- gsub('^4$', '1', Leuko_R_table$ident)
+Leuko_R_table$ident <- gsub('^7$', '5', Leuko_R_table$ident)
+Leuko_R_table$ident <- gsub('^3$', '2', Leuko_R_table$ident)
+Leuko_R_table$ident <- gsub('^6$', '2', Leuko_R_table$ident)
+Leuko_R_table$ident <- gsub('^8$', '2', Leuko_R_table$ident)
+Leuko_R_table$ident <- gsub('^10$', '2', Leuko_R_table$ident)
+Leuko_R_table$ident <- gsub('^12$', '2', Leuko_R_table$ident)
+Leuko_R_table$ident <- gsub('^13$', '2', Leuko_R_table$ident)
+Leuko_R_table$ident <- as.numeric(Leuko_R_table$ident)
+Leuko_R_Mean_table <- Leuko_R_table %>% group_by(ident) %>% summarise_all(funs(mean))
+Leuko_R_table2 <- Leuko_R_table[,2:ncol(Leuko_R_table)]
+Leuko_R_table2[Leuko_R_table2 > 0] <- 1
+Leuko_R_table2 <- cbind(Leuko_R_table[,1], Leuko_R_table2)
+colnames(Leuko_R_table2)[1] <- 'ident'
+Leuko_R_PA_table <- Leuko_R_table2 %>% group_by(ident) %>% summarise_all(funs(mean))
+
+write.csv(Leuko_R_PA_table, "Leuko_R_PA_table.csv")
+```
+
+```{r}
+Gene_selector <- function(Expr_df, MeanUMI_df){
+  #Expr_df <- Stroma_L_table
+  #MeanUMI_df <- Stroma_L_Mean_table
+  allsum <- data.frame(Expr_df[,1], stringsAsFactors=F)
+  colnames(allsum)[1] <- 'ident'
+  allsum$soap <- 1
+  allsum <- allsum %>% group_by(ident) %>% summarise_all(sum)
+  cc <- NULL
+  #i <- grep("Csf1", colnames(Expr_df))
+
+  for (i in 1:ncol(Expr_df)){
+    positive_list <- data.frame(Expr_df[Expr_df[,i] > 0.1,1], stringsAsFactors=F)
+    if (nrow(positive_list)==0){
+      cc <- cbind(cc, as.logical(rep('FALSE', nrow(allsum))))
+    } else {
+    colnames(positive_list)[1] <- 'ident'
+    positive_list$soap <- 1
+    positive_sum <- positive_list %>% group_by(ident) %>% summarise_all(sum)
+  
+    if (nrow(positive_sum)!=nrow(allsum)){
+      positive_sum2 <- merge(positive_sum, allsum, by='ident', all.y=T)
+      positive_sum2[is.na(positive_sum2)] <- 0
+      positive_sum2$soap.y <- NULL
+      colnames(positive_sum2)[2] <- 'soap'
+      positive_sum <- positive_sum2
+    } else {}
+    positive_sum$ratio <- positive_sum$soap/allsum$soap
+    positive_sum$norm_ratio <- (positive_sum$soap/allsum$soap)*(sum(allsum$soap)/sum(positive_sum$soap))
+  
+    cc <- cbind(cc, positive_sum$ratio > 0.2)
+    }
+  }
+  
+  candidate_list <- which(cc==T, arr.ind=T)
+
+  ret_df <- apply(candidate_list, 1, function(x){return(unlist(c(colnames(MeanUMI_df)[x[2]], MeanUMI_df$ident[x[1]],
+                                                                 MeanUMI_df[x[1], x[2]])))})
+  ret_df <- data.frame(t(ret_df), stringsAsFactors=F)
+  ret_df <- ret_df[-grep("ident", ret_df[,1]),]
+  colnames(ret_df) <- c('Gene', 'ident', 'MeanUMI')
+  return(ret_df)
+}
+
+StromaLCandidates <- Gene_selector(Stroma_L_table, Stroma_L_Mean_table)
+StromaRCandidates <- Gene_selector(Stroma_R_table, Stroma_R_Mean_table)
+LeukoLCandidates <- Gene_selector(Leuko_L_table, Leuko_L_Mean_table)
+LeukoRCandidates <- Gene_selector(Leuko_R_table, Leuko_R_Mean_table)
+
+StromaLCandidates$ident <- paste('Stroma_L_', StromaLCandidates$ident, sep='')
+StromaRCandidates$ident <- paste('Stroma_R_', StromaRCandidates$ident, sep='')
+LeukoLCandidates$ident <- paste('Leuko_L_', LeukoLCandidates$ident, sep='')
+LeukoRCandidates$ident <- paste('Leuko_R_', LeukoRCandidates$ident, sep='')
+
+#x <- LR_Pair[1,]
+Pair_finder <- function(LCandidates, RCandidates, LR_pair){
+  pair_exist <- NULL
+  for (i in (1:nrow(LR_pair))){
+    if (((length(grep(LR_pair[i,1], LCandidates$Gene, ignore.case=T))!=0) & 
+         (length(grep(LR_pair[i,2], RCandidates$Gene, ignore.case=T))!=0))==TRUE){
+      pair_exist <- rbind(pair_exist, LR_pair[i,])
+    } 
+  }
+  bobobo <- NULL
+  for (k in 1:nrow(pair_exist)){
+    if ((length(grep(pair_exist[k,1], LCandidates$Gene, ignore.case=T))==length(levels(factor(LCandidates$ident)))) &
+        (length(grep(pair_exist[k,2], RCandidates$Gene, ignore.case=T))==length(levels(factor(RCandidates$ident))))){
+    } else {
+      for (LL in grep(pair_exist[k,1], LCandidates$Gene, ignore.case=T)){
+        for (RR in grep(pair_exist[k,2], RCandidates$Gene, ignore.case=T)){
+          bobobo <- rbind(bobobo, cbind(LCandidates[LL,], RCandidates[RR,]))
+        }
+      }
+    }
+  }
+  colnames(bobobo) <- c("L_Gene", "L_ident", "L_MeanUMI",
+                        "R_Gene", "R_ident", "R_MeanUMI")
+  return(bobobo)
+}
+#LCandidates <- StromaLCandidates
+#RCandidates <- StromaRCandidates
+#LR_pair <- LR_Pair
+#k<-2
+Stroma_L_Leuko_R <- Pair_finder(StromaLCandidates, LeukoRCandidates, LR_Pair)
+Leuko_L_Stroma_R <- Pair_finder(LeukoLCandidates, StromaRCandidates, LR_Pair)
+Stroma_L_Stroma_R <- Pair_finder(StromaLCandidates, StromaRCandidates, LR_Pair) 
+Leuko_L_Leuko_R <- Pair_finder(LeukoLCandidates, LeukoRCandidates, LR_Pair)
+#levels(factor(StromaLCandidates$ident))
+#levels(factor(LeukoLCandidates$ident))
+merged <- rbind(Stroma_L_Leuko_R, Stroma_L_Stroma_R, Leuko_L_Stroma_R, Leuko_L_Leuko_R)
+
+merged$Str <- (as.numeric(merged$L_MeanUMI)*as.numeric(merged$L_MeanUMI))/max((as.numeric(merged$L_MeanUMI)*as.numeric(merged$L_MeanUMI)))
+merged$L_Gene <- paste(merged$L_ident, merged$L_Gene, sep='_')
+merged$R_Gene <- paste(merged$R_ident, merged$R_Gene, sep='_')
+
+write.table(merged, 'interaction_cyto_merged_new2.txt', sep='\t', quote=F, row.names=F)
+```
+
+```{r}
+#Ligand merger
+testt <- merged
+
+testt$L_MeanUMI <- as.numeric(testt$L_MeanUMI)
+testt$R_MeanUMI <- as.numeric(testt$R_MeanUMI)
+testt$Str <- as.numeric(testt$Str)
+
+testt$L_Gene <- NULL
+testt$R_ident <- NULL
+#testt$L_ident_R_Gene <- paste(testt$R_Gene, testt$L_ident, sep='_')
+#testt$R_Gene <- NULL
+#testt$L_ident <- NULL
+
+papapa <- testt %>% group_by(L_ident, R_Gene) %>% summarise_all(sum)
+
+New_L_Gene <- NULL
+for (i in 1:nrow(papapa)){
+  sss <- merged[intersect(grep(papapa$L_ident[i], merged$L_ident), grep(papapa$R_Gene[i], merged$R_Gene)),]
+  New_L_Gene <- append(New_L_Gene, paste(gsub('\\w*_[RL]_\\d*_(.*)', '\\1', sss$L_Gene), collapse='_'))
+}
+
+papapa$L_Gene <- paste(papapa$L_ident, New_L_Gene, sep='_')
+write.table(papapa, 'interaction_cyto_merged_new_Lmerged2.txt', sep='\t', quote=F, row.names=F)
+
+papapa <- read.csv('interaction_cyto_merged_new_Lmerged2.txt', sep='\t')
+papapa$R_Ident <- gsub("(\\w_[LR]_\\d*)_.*", "\\1", papapa$R_Gene)
+
+write.table(papapa, 'interaction_cyto_merged_new_Lmerged_0.20.txt', sep='\t', quote=F, row.names=F)
+```
+
+
+```{r}
+papapa2 <- data.frame(cbind(as.character(merged$L_ident), as.character(merged$R_ident)), stringsAsFactors=F)
+papapa2$soap <- 1
+colnames(papapa2) <- c("L_ident", "R_ident", "soap")
+papapa2$L_ident <- gsub("_L_", "_R_", papapa2$L_ident)
+papapa2 <- papapa2 %>% group_by(L_ident, R_ident) %>% summarise_all(funs(sum))
+papapa2$soap_log2 <- log2(papapa2$soap)
+
+write.table(papapa2, 'interaction_cyto_merged_consol.txt', sep='\t', quote=F, row.names=F)
+
+```
