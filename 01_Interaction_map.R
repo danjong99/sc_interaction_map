@@ -15,6 +15,11 @@ pp_apc_receptor_mtx <- read.delim("pp_apc_receptor_mtx.txt")
 # (7): pDCs --> 4
 # (8): ILC2 --> 3
 
+a = data.frame(cluster = c(0,1,2,3,4), celltype = c("DCs","MPs","ILC13","ILC2","pDCs"))
+a$cluster <- as.character(paste0("pp_R_",a$cluster))
+write.table(a,file = 'pp_apc_ident.txt', sep = '\t', row.names = F)
+class(a$cluster)
+
 pp_apc_ligand_mtx$ident <- pp_apc_receptor_mtx$ident %>% unname()
 pp_apc_ligand_mtx <- pp_apc_ligand_mtx[pp_apc_ligand_mtx$ident != 5 & 
                                          pp_apc_ligand_mtx$ident != 9,]
@@ -62,6 +67,7 @@ ident_index$new_ident <- c("entero","stem","endocrine","entero","stem","stem",
 clusters <- sapply(ident_vector, FUN = function(x) return(ident_index[x,][3]) )
 clusters <- clusters %>% unlist() %>% unname()
 epithelial_ligand_mtx$ident <- clusters
+write.table(ident_index, file = 'epi_ident.txt', sep = '\t')
 
 epithelial_ligand_mean_mtx <- epithelial_ligand_mtx %>% group_by(ident) %>% summarise_all(funs(mean))
 epithelial_ligand_mtx2 <- epithelial_ligand_mtx[,2:ncol(epithelial_ligand_mtx)]
