@@ -22,7 +22,7 @@ for (i in 1:nrow(papapa)){
 papapa$L_Gene <- paste(papapa$L_ident, New_L_Gene, sep='_')
 #write.table(papapa, 'interaction_cyto_merged_new_Lmerged2.txt', sep='\t', quote=F, row.names=F)
 #papapa <- read.csv('interaction_cyto_merged_new_Lmerged2.txt', sep='\t')
-papapa$R_Ident <- gsub("(\\w_[LR]_\\d*)_.*", "\\1", papapa$R_Gene)
+papapa$R_ident <- gsub("(\\w_[LR]_\\d*)_.*", "\\1", papapa$R_Gene)
 papapa <- papapa[sort(colnames(papapa))]
 write.table(papapa, './results_pp_dEpi_orgEpi/02_interaction_cyto_merged_new_Lmerged_0.20.txt', sep='\t', quote=F, row.names=F)#Ligand merger
 
