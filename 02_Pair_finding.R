@@ -22,6 +22,4 @@ merged <- rbind(pp_L_epi_R, pp_L_pp_R, epi_L_pp_R, epi_L_epi_R)
 merged$Str <- (as.numeric(merged$L_MeanUMI)*as.numeric(merged$L_MeanUMI))/max((as.numeric(merged$L_MeanUMI)*as.numeric(merged$L_MeanUMI)))
 merged$L_Gene <- paste(merged$L_ident, merged$L_Gene, sep='_')
 merged$R_Gene <- paste(merged$R_ident, merged$R_Gene, sep='_')
-write.table(merged, './results/01_interaction_cyto_merged.txt', sep='\t', quote=F, row.names=F)
-
-
+write.table(merged, './results_pp_dEpi_orgEpi/01_interaction_cyto_merged.txt', sep='\t', quote=F, row.names=F)

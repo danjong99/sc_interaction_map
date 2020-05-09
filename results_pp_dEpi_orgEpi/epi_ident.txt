@@ -1,0 +1,10 @@
+"ident"	"cluster"
+"Stem"	"Stem"	0
+"Endocrine"	"Endocrine"	1
+"Enterocyte.Progenitor"	"Enterocyte.Progenitor"	2
+"TA.Early"	"TA.Early"	3
+"M.cell.Progenitor.1"	"M.cell.Progenitor.1"	4
+"Goblet"	"Goblet"	5
+"Enterocyte.2"	"Enterocyte.2"	6
+"Tuft"	"Tuft"	7
+"M.cell"	"M.cell"	8

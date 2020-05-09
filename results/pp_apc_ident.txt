@@ -1,6 +1,0 @@
-"cluster"	"celltype"
-"pp_R_0"	"DCs"
-"pp_R_1"	"MPs"
-"pp_R_2"	"ILC13"
-"pp_R_3"	"ILC2"
-"pp_R_4"	"pDCs"

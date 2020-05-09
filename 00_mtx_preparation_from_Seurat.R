@@ -8,8 +8,8 @@ library(dplyr)
 library(clipr)
 
 ## Data loading
-cca_pp_mhcii <- readRDS("/Volumes/Extreme SSD/scRNAseq_analysisfile/10XResults/scRNAseq_PP/scRNA-PP/cca_pp_mhcii.rds")
-epiMerged <- readRDS("/Volumes/Extreme SSD/scRNAseq_analysisfile/10XResults/SIgA_production/scRNAseq_epithelialCells/epiMerged.integrated.rds")
+cca_pp_mhcii <- readRDS("/home/kangb3/Desktop/Data/All/scRNAseq-PP/cca_pp_mhcii.rds")
+epiMerged <- readRDS("/home/kangb3/Desktop/Data/All/scRNAseq_epithelialCells/epiMerged.integrated.rds")
 
 
 DimPlot(cca_pp_mhcii, label = T, reduction = 'tsne')
@@ -80,16 +80,14 @@ fae.cell.ids <- Cells(epiMerged)[grep("F_",Cells(epiMerged))]
 fae_epithelium <- subset(x = epiMerged, cells = fae.cell.ids)
 DimPlot(fae_epithelium, label = T)
 
-dome_epi_mtx <- GetAssayData(fae_epithelium, assay = "RNA")
+dome_epi_mtx <- GetAssayData(epimerged.integrated, assay = "RNA")
 temp <- t(as.matrix(dome_epi_mtx))
-temp <- cbind(data.frame(ident = Idents(fae_epithelium), stringsAsFactors = F), temp)
+temp <- cbind(data.frame(ident = Idents(epimerged.integrated), stringsAsFactors = F), temp)
+temp$ident <- as.character(temp$ident)
 dome_epi_mtx <- t(temp)
 
-col_name <- gsub("_GFI1B.","",colnames(dome_epi_mtx))
-col_name <- gsub("F_B1_","",col_name)
-col_name <- gsub("F_B2_","",col_name)
-col_name <- gsub("F_B3_.","",col_name)
-colnames(dome_epi_mtx) <- col_name
+col_name <- colnames(dome_epi_mtx)
+colnames(dome_epi_mtx) <- sapply(col_name, FUN = function(x){ strsplit(x,"_")[[1]][3]}) %>% unlist() %>% unname()
 dome_epi_mtx <- dome_epi_mtx[,!duplicated(colnames(dome_epi_mtx))]
 dome_epi_mtx <- t(dome_epi_mtx)
 temp_idents <- dome_epi_mtx[,1:2]
@@ -100,9 +98,9 @@ epithelial_receptor_mtx <- dome_epi_mtx[,(colnames(dome_epi_mtx) %in% lr_pair$Re
 epithelial_ligand_mtx <- cbind(as.data.frame(temp_idents), epithelial_ligand_mtx)
 epithelial_receptor_mtx <- cbind(as.data.frame(temp_idents), epithelial_receptor_mtx)
 
-write.table(lr_pair, file = "LR_Pair_mus_musculus.txt", sep = '\t')
-write.table(epithelial_ligand_mtx, file = "epithelial_ligand_mtx.txt", sep = '\t')
-write.table(epithelial_receptor_mtx, file = "epithelial_receptor_mtx.txt", sep = '\t')
+write.table(lr_pair, file = "./results_pp_dEpi_orgEpi/LR_Pair_mus_musculus.txt", sep = '\t')
+write.table(epithelial_ligand_mtx, file = "./results_pp_dEpi_orgEpi/epithelial_ligand_mtx.txt", sep = '\t')
+write.table(epithelial_receptor_mtx, file = "./results_pp_dEpi_orgEpi/epithelial_receptor_mtx.txt", sep = '\t')
 
 #####################################################################################
 ## Interaction Matrix Preparation from PP Phagocytes
@@ -125,6 +123,6 @@ pp_apc_receptor_mtx <- pp_apc_mtx[,colnames(pp_apc_mtx) %in% lr_pair$Receptor]
 pp_apc_ligand_mtx <- cbind(as.data.frame(temp_idents), pp_apc_ligand_mtx)
 pp_apc_receptor_mtx <- cbind(as.data.frame(temp_idents), pp_apc_receptor_mtx)
 
-write.table(pp_apc_ligand_mtx, file = "pp_apc_ligand_mtx.txt", sep = '\t')
-write.table(pp_apc_receptor_mtx, file = "pp_apc_receptor_mtx.txt", sep = '\t')
+write.table(pp_apc_ligand_mtx, file = "./results_pp_dEpi_orgEpi/pp_apc_ligand_mtx.txt", sep = '\t')
+write.table(pp_apc_receptor_mtx, file = "./results_pp_dEpi_orgEpi/pp_apc_receptor_mtx.txt", sep = '\t')
 

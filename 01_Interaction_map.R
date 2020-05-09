@@ -1,11 +1,11 @@
 rm(list=ls())
 
 library(dplyr)
-lr_pair <- read.delim("LR_Pair_mus_musculus.txt")
-epithelial_ligand_mtx <- read.delim("epithelial_ligand_mtx.txt")
-epithelial_receptor_mtx <- read.delim("epithelial_receptor_mtx.txt")
-pp_apc_ligand_mtx <- read.delim("pp_apc_ligand_mtx.txt")
-pp_apc_receptor_mtx <- read.delim("pp_apc_receptor_mtx.txt")
+lr_pair <- read.delim("./results_pp_dEpi_orgEpi/LR_Pair_mus_musculus.txt")
+epithelial_ligand_mtx <- read.delim("./results_pp_dEpi_orgEpi/epithelial_ligand_mtx.txt")
+epithelial_receptor_mtx <- read.delim("./results_pp_dEpi_orgEpi/epithelial_receptor_mtx.txt")
+pp_apc_ligand_mtx <- read.delim("./results_pp_dEpi_orgEpi/pp_apc_ligand_mtx.txt")
+pp_apc_receptor_mtx <- read.delim("./results_pp_dEpi_orgEpi/pp_apc_receptor_mtx.txt")
 
 # pp_apcs : new cluster
 # (2,4,6): ILC13 --> 2
@@ -17,7 +17,7 @@ pp_apc_receptor_mtx <- read.delim("pp_apc_receptor_mtx.txt")
 
 a = data.frame(cluster = c(0,1,2,3,4), celltype = c("DCs","MPs","ILC13","ILC2","pDCs"))
 a$cluster <- as.character(paste0("pp_R_",a$cluster))
-write.table(a,file = 'pp_apc_ident.txt', sep = '\t', row.names = F)
+write.table(a,file = './results_pp_dEpi_orgEpi/pp_apc_ident.txt', sep = '\t', row.names = F)
 class(a$cluster)
 
 pp_apc_ligand_mtx$ident <- pp_apc_receptor_mtx$ident %>% unname()
@@ -59,15 +59,18 @@ pp_apc_receptor_PA_mtx <- pp_apc_receptor_mtx2 %>% group_by(ident) %>% summarise
 #### Cell Identification Table
 ident_vector <- epithelial_ligand_mtx$ident
 ident_index = data.frame(ident = unique(ident_vector))
-ident_index$cluster <- rownames(ident_index)
-rownames(ident_index) <- ident_index$ident
-ident_index$new_cluster <- c(1,2,3,1,2,2,1,2,2,4,1,2,5,6)
-ident_index$new_ident <- c("entero","stem","endocrine","entero","stem","stem",
-                           "entero","stem","stem","goblet","entero","stem","paneth","tuft")
-clusters <- sapply(ident_vector, FUN = function(x) return(ident_index[x,][3]) )
-clusters <- clusters %>% unlist() %>% unname()
-epithelial_ligand_mtx$ident <- clusters
-write.table(ident_index, file = 'epi_ident.txt', sep = '\t')
+ident_index$cluster <- c(0,1,2,3,4,5,6,7,8)
+rownames(ident_index) <- as.character(ident_index$ident)
+#rownames(ident_index) <- ident_index$ident
+#ident_index$new_cluster <- c(1,2,3,1,2,2,1,2,2,4,1,2,5,6)
+#ident_index$new_ident <- c("entero","stem","endocrine","entero","stem","stem",
+#                           "entero","stem","stem","goblet","entero","stem","paneth","tuft")
+#clusters <- sapply(ident_vector, FUN = function(x) return(ident_index[x,][3]) )
+#clusters <- clusters %>% unlist() %>% unname()
+#epithelial_ligand_mtx$ident <- clusters
+write.table(ident_index, file = './results_pp_dEpi_orgEpi/epi_ident.txt', sep = '\t')
+epithelial_ligand_mtx$ident <-
+sapply(epithelial_ligand_mtx$ident, FUN = function(x){ ident_index[x,]$cluster }) %>% unlist() %>% unname()
 
 epithelial_ligand_mean_mtx <- epithelial_ligand_mtx %>% group_by(ident) %>% summarise_all(funs(mean))
 epithelial_ligand_mtx2 <- epithelial_ligand_mtx[,2:ncol(epithelial_ligand_mtx)]
